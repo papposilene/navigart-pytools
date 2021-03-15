@@ -170,8 +170,8 @@ def main():
             entries.append(entry)
             num_rows += 1
 
-        output_path = './data/' + args.museum + '/'
-        output_file = output_path + args.museum + '-' + str(api_start) + '.json'
+        output_path = './data/' + args.museum
+        output_file = output_path + '/' + args.museum + '-' + str(api_start) + '.json'
         try:
             os.mkdir(output_path)
         except OSError:
