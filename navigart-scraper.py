@@ -18,7 +18,7 @@ class bcolors:
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Scrape the Navigart internal API for retrieving all public data into an output file.')
-    parser.add_argument('-m', '--museum', nargs='?', default='museum', type=str, required=False, help='Choose a name of the museum for the output file name (default: museum).')
+    parser.add_argument('-m', '--museum', type=str, required=True, choices=['cnam', 'mnpp'], help='Choose a supported french museum.')
     parser.add_argument('-s', '--start', nargs='?', default=0, type=int, required=False, help='Choose a start page (default: 0).')
     parser.add_argument('-l', '--limit', nargs='?', default=1000, type=int, required=False, help='Choose a limit by page (default: 1000).')
     parser.add_argument('-v', '--version', action='version', version='1.0')
@@ -56,8 +56,16 @@ def create_entry():
     }
 
 def main():
-    # Initialization
+    args = parse_args()
+    num_rows = 0
+    entries = []
 
+    # Supported french museum
+    museum = args.museum
+    if museum == 'cnam': navigart_url = 'https://api.navigart.fr/15/'
+    if museum == 'mnpp': navigart_url = 'https://www.navigart.fr/picassoparis/'
+
+    # Initialization
     fieldnames = [
         'id', 'department',
         'artist_id', 'artist_type', 'artist_name', 'artist_gender',
@@ -66,10 +74,6 @@ def main():
         'object_height', 'object_width', 'object_depth', 'object_weight', 'object_copyright',
         'object_visibility', 'art_movement', 'acquisition_type', 'acquisition_date'
     ]
-
-    args = parse_args()
-    num_rows = 0
-    entries = []
 
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 11.2; rv:86.0) Gecko/20100101 Firefox/86.0',
@@ -82,7 +86,7 @@ def main():
     }
     api_limit = args.limit
     api_start = args.start
-    api_infos = requests.get('https://api.navigart.fr/15/artworks?sort=by_inv&size=1&from=0', headers=headers)
+    api_infos = requests.get(navigart_url + 'artworks?sort=by_inv&size=1&from=0', headers=headers)
     navigart_info = api_infos.json()
     print(f"{bcolors.HEADER}Total of available objects:", navigart_info['filteredCount'], f"{bcolors.ENDC}")
 

@@ -7,12 +7,23 @@ Les méthodes et outils utilisés dans ce réseau permettent : l’informatisati
 Ce projet, d'initiative publique, ne permet pas (encore ?) la mise en place d'une API publique offrant à chacun, alors que les collections nationales françaises sont publiques, d'explorer à sa guise le patrimoine de la Nation. Dans le cadre d'un projet personnel, il m'a fallu récupérer quelques données du Centre Pompidou, d'où l'existence de ce petit script en python.
 
 ## Installation
-
 ```
 pip install argparse json re requests time
 ```
 
+## Usage
 To scrape Navigart, run:
 ```
-python3 navigart-scraper.py --museum centre-pompidou --start 0 --limit 1000
+python3 navigart-scraper.py --museum cnam --start 0 --limit 1000
+```
+
+## Supported french museum databases
+The `--museum` parameter actually supports the databases of those french museum:
+- `cnam`: [Centre national d'art moderne (Centre Georges Pompidou)](https://collection.centrepompidou.fr/).
+- `mnpp`: [Musée national Pablo Picasso](https://www.museepicassoparis.fr/fr/collection-en-ligne).
+
+## JSON Merger
+By default, this script produces a JSON file by the given limit parameter. It helps to not having a too big final file but some smaller files. A JSON merger script is provided.
+```
+python3 json-merger.py --folder data
 ```
