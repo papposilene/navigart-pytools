@@ -64,6 +64,7 @@ def main():
 
     args = parse_args()
     num_rows = 0
+    entries = []
 
     # https://api.navigart.fr/15/artworks?sort=by_inv&size=1000&from=0
 
@@ -83,7 +84,7 @@ def main():
     navigart_info = api_infos.json()
     print(f"{bcolors.HEADER}Total of available objects:", navigart_info['filteredCount'], f"{bcolors.ENDC}")
 
-    for num_rows in range(num_rows, navigart_info['filteredCount'], 1):
+    for num_rows in range(num_rows, navigart_info['filteredCount'], api_limit):
         navigart = requests.get('https://api.navigart.fr/15/artworks?sort=by_inv&size=' + str(api_limit) + '&from=' + str(api_start), headers=headers)
         print(f"{bcolors.WARNING}HTTP Status:", navigart.status_code, f"{bcolors.ENDC}")
         print(f"{bcolors.FAIL}Page number:", api_start, f"{bcolors.ENDC}")
@@ -138,17 +139,18 @@ def main():
             if 'acquisition_year' in navigart_data['_source']['ua']['artwork']:
                 entry['acquisition_date'] = navigart_data['_source']['ua']['artwork']['acquisition_year']
 
-
-            output_file = './data/' + args.museum + '-' + api_start + '.json'
-            with open(output_file, 'a+') as json_outputfile:
-                json_outputfile.write(json.dumps(entry, indent = 4))
-                json_outputfile.close()
-
+            entries.append(entry)
             num_rows += 1
+
+        output_file = './data/' + args.museum + '-' + str(api_start) + '.json'
+        with open(output_file, 'a+') as json_outputfile:
+            json_outputfile.write(json.dumps(entries, indent = 4))
+            json_outputfile.close()
 
         api_start = api_start + api_limit
         print('Just wrote {} rows.'.format(num_rows))
         print('Waiting for next round, starting at {}.'.format(api_start))
+        entries = []
         time.sleep(5)
 
     print('Wrote a total of {} rows.'.format(num_rows))
