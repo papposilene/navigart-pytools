@@ -113,26 +113,19 @@ def main():
                 if 'gender' in author: entry['artist_gender'] = author['gender']
                 if 'authors_birth_death' in navigart_data['_source']['ua']['artwork']:
                     author_dates = navigart_data['_source']['ua']['artwork']['authors_birth_death']
-                    print(author_dates)
-                    if 'authors_birth_death' == None:
-                        entry['artist_birth'] = 'xxxx'
-                        entry['artist_death'] = 'xxxx'
-                    else:
-                        # Explode authors_birth_death
-                        author_years = author_dates.split(' - ')
-                        if len(author_years) > 1:
-                            birthyear = author_years[0].split(',')
-                            deathyear = author_years[1].split(',')
-                            entry['artist_birth'] = birthyear[0]
-                            entry['artist_death'] = deathyear[0]
+                    # Explode authors_birth_death
+                    author_years = author_dates.split(' - ')
+                    if len(author_years) > 1:
+                        birthyear = author_years[0].split(',')
+                        deathyear = author_years[1].split(',')
+                        entry['artist_birth'] = birthyear[0]
+                        entry['artist_death'] = deathyear[0]
 
                 if 'authors_nationality' in navigart_data['_source']['ua']['artwork']:
-                    if 'authors_birth_death' == None:
-                        entry['artist_nationality'] = 'unknown'
-                    else:
-                        # First word will be considered as nationality
-                        author_place = navigart_data['_source']['ua']['artwork']['authors_nationality']
-                        author_place = author_place.split(' ')
+                    # First word will be considered as nationality
+                    author_place = navigart_data['_source']['ua']['artwork']['authors_nationality']
+                    author_place = author_place.split(' ')
+                    if len(author_place) > 1:
                         entry['artist_nationality'] = author_place[0]
 
             # Object
