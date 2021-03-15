@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import json
+import re
 import requests
 import time
 
@@ -140,13 +141,14 @@ def main():
             if 'domain_description_mst' in navigart_data['_source']['ua']['artwork']:
                 entry['object_technique'] = navigart_data['_source']['ua']['artwork']['domain_description_mst']
             if 'dimensions' in navigart_data['_source']['ua']['artwork']:
-                entry['object_height'] = navigart_data['_source']['ua']['artwork']['dimensions']
-            if 'dimensions' in navigart_data['_source']['ua']['artwork']:
-                entry['object_width'] = navigart_data['_source']['ua']['artwork']['dimensions']
-            if 'dimensions' in navigart_data['_source']['ua']['artwork']:
-                entry['object_depth'] = navigart_data['_source']['ua']['artwork']['dimensions']
-            if 'dimensions' in navigart_data['_source']['ua']['artwork']:
-                entry['object_weight'] = navigart_data['_source']['ua']['artwork']['dimensions']
+                object_dims = navigart_data['_source']['ua']['artwork']['dimensions']
+                regex_dims = re.findall("\d+(?:\,\d*)?", object_dims)
+                if len(regex_dims) > 0:
+                    entry['object_height'] = float(regex_dims[0].replace(',',''))
+                if len(regex_dims) > 1:
+                    entry['object_width'] = float(regex_dims[1].replace(',',''))
+                if len(regex_dims) > 2:
+                    entry['object_depth'] = float(regex_dims[2].replace(',',''))
             if 'copyright' in navigart_data['_source']['ua']['artwork']:
                 entry['object_copyright'] = navigart_data['_source']['ua']['artwork']['copyright']
 
@@ -156,7 +158,7 @@ def main():
             if 'acquisition_mode' in navigart_data['_source']['ua']['artwork']:
                 entry['acquisition_type'] = navigart_data['_source']['ua']['artwork']['acquisition_mode']
             if 'acquisition_year' in navigart_data['_source']['ua']['artwork']:
-                entry['acquisition_date'] = navigart_data['_source']['ua']['artwork']['acquisition_year']
+                entry['acquisition_date'] = int(navigart_data['_source']['ua']['artwork']['acquisition_year'])
 
             entries.append(entry)
             num_rows += 1

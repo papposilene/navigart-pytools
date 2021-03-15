@@ -9,7 +9,7 @@ Ce projet, d'initiative publique, ne permet pas (encore ?) la mise en place d'un
 ## Installation
 
 ```
-pip install argparse json requests time
+pip install argparse json re requests time
 ```
 
 To scrape Navigart, run:
