@@ -32,8 +32,10 @@ def create_entry():
         "artist_id": None, # authors.*._id
         "artist_type": None, # authors.*.type
         "artist_name": None, # authors.*.notice
-        "artist_date": None, # authors_birth_death ("1866, Moscou (Russie, Empire Russe) - 1944, Neuilly-sur-Seine (Seine, France)")
         "artist_gender": None, # authors.*.gender
+        "artist_birth": None,
+        "artist_death": None,
+        "artist_nationality": None,
         # Object
         "object_inventory": None, # inventory
         "object_title": None, # title_notice
@@ -56,7 +58,8 @@ def main():
 
     fieldnames = [
         'id', 'department',
-        'artist_id', 'artist_type', 'artist_name', 'artist_date', 'artist_gender',
+        'artist_id', 'artist_type', 'artist_name', 'artist_gender',
+        'artist_birth', 'artist_death', 'artist_nationality',
         'object_inventory', 'object_title', 'object_date', 'object_type', 'object_technique',
         'object_height', 'object_width', 'object_depth', 'object_weight', 'object_copyright',
         'art_movement', 'acquisition_type', 'acquisition_date'
@@ -108,6 +111,29 @@ def main():
                 if 'type' in author: entry['artist_type'] = author['type']
                 if 'name' in author: entry['artist_name'] = author['name']['notice']
                 if 'gender' in author: entry['artist_gender'] = author['gender']
+                if 'authors_birth_death' in navigart_data['_source']['ua']['artwork']:
+                    author_dates = navigart_data['_source']['ua']['artwork']['authors_birth_death']
+                    print(author_dates)
+                    if 'authors_birth_death' == None:
+                        entry['artist_birth'] = 'xxxx'
+                        entry['artist_death'] = 'xxxx'
+                    else:
+                        # Explode authors_birth_death
+                        author_years = author_dates.split(' - ')
+                        if len(author_years) > 1:
+                            birthyear = author_years[0].split(',')
+                            deathyear = author_years[1].split(',')
+                            entry['artist_birth'] = birthyear[0]
+                            entry['artist_death'] = deathyear[0]
+
+                if 'authors_nationality' in navigart_data['_source']['ua']['artwork']:
+                    if 'authors_birth_death' == None:
+                        entry['artist_nationality'] = 'unknown'
+                    else:
+                        # First word will be considered as nationality
+                        author_place = navigart_data['_source']['ua']['artwork']['authors_nationality']
+                        author_place = author_place.split(' ')
+                        entry['artist_nationality'] = author_place[0]
 
             # Object
             if 'inventory' in navigart_data['_source']['ua']['artwork']:
