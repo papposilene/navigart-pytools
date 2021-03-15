@@ -66,7 +66,7 @@ def main():
     if museum == 'cnam': navigart_url = 'https://api.navigart.fr/15/'
     if museum == 'mnpp': navigart_url = 'https://www.navigart.fr/picassoparis/'
 
-    # Initialization
+    # Set up the final JSON structure
     fieldnames = [
         'id', 'department',
         'artist_id', 'artist_type', 'artist_name', 'artist_gender',
@@ -76,6 +76,7 @@ def main():
         'object_visibility', 'art_movement', 'acquisition_type', 'acquisition_date'
     ]
 
+    # Set up the web scraper
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 11.2; rv:86.0) Gecko/20100101 Firefox/86.0',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -91,6 +92,16 @@ def main():
     navigart_info = api_infos.json()
     print(f"{bcolors.HEADER}Total of available objects:", navigart_info['filteredCount'], f"{bcolors.ENDC}")
 
+    # Set up the storage directory
+    output_path = './data/' + args.museum
+    try:
+        os.mkdir(output_path)
+    except OSError:
+        print ("Creation of the directory %s failed" % output_path)
+    else:
+        print ("Successfully created the directory %s " % output_path)
+
+    # Let's go!
     for num_rows in range(num_rows, navigart_info['filteredCount'], api_limit):
         navigart = requests.get('https://api.navigart.fr/15/artworks?sort=by_inv&size=' + str(api_limit) + '&from=' + str(api_start), headers=headers)
         print(f"{bcolors.WARNING}HTTP Status:", navigart.status_code, f"{bcolors.ENDC}")
@@ -170,15 +181,7 @@ def main():
             entries.append(entry)
             num_rows += 1
 
-        output_path = './data/' + args.museum
         output_file = output_path + '/' + args.museum + '-' + str(api_start) + '.json'
-        try:
-            os.mkdir(output_path)
-        except OSError:
-            print ("Creation of the directory %s failed" % output_path)
-        else:
-            print ("Successfully created the directory %s " % output_path)
-
         with open(output_file, 'a+') as json_outputfile:
             json_outputfile.write(json.dumps(entries, indent = 4))
             json_outputfile.close()
@@ -189,6 +192,7 @@ def main():
         entries = []
         time.sleep(60)
 
+    # Finished!
     print('Wrote a total of {} rows.'.format(num_rows))
 
 if __name__ == '__main__':
