@@ -19,8 +19,8 @@ class bcolors:
 def parse_args():
     parser = argparse.ArgumentParser(description='Scrape the Navigart internal API for retrieving all public data into an output file.')
     parser.add_argument('-m', '--museum', nargs='?', default='museum', type=str, required=False, help='Choose a name of the museum for the output file name (default: museum).')
-    parser.add_argument('-s', '--start', nargs='?', default=0, type=int, required=False, help='choose a start page (default: 0).')
-    parser.add_argument('-l', '--limit', nargs='?', default=1000, type=int, required=False, help='choose a limit by page (default: 1000).')
+    parser.add_argument('-s', '--start', nargs='?', default=0, type=int, required=False, help='Choose a start page (default: 0).')
+    parser.add_argument('-l', '--limit', nargs='?', default=1000, type=int, required=False, help='Choose a limit by page (default: 1000).')
     parser.add_argument('-v', '--version', action='version', version='1.0')
     return parser.parse_args()
 
@@ -70,8 +70,6 @@ def main():
     num_rows = 0
     entries = []
 
-    # https://api.navigart.fr/15/artworks?sort=by_inv&size=1000&from=0
-
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 11.2; rv:86.0) Gecko/20100101 Firefox/86.0',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -81,7 +79,6 @@ def main():
         'Pragma': 'no-cache',
         'Cache-Control': 'no-cache',
     }
-
     api_limit = args.limit
     api_start = args.start
     api_infos = requests.get('https://api.navigart.fr/15/artworks?sort=by_inv&size=1&from=0', headers=headers)
