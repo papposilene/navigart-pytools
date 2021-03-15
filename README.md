@@ -25,5 +25,5 @@ The `--museum` parameter actually supports the databases of those french museum:
 ## JSON Merger
 By default, this script produces a JSON file by the given limit parameter. It helps to not having a too big final file but some smaller files. A JSON merger script is provided.
 ```
-python3 json-merger.py --folder data
+python3 json-merger.py --folder ./data/cnam
 ```

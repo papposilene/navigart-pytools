@@ -16,14 +16,14 @@ class bcolors:
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Merge all JSON files in a given folder.')
-    parser.add_argument('-f', '--folder', type=str, required=True, help='Choose a folder.')
+    parser.add_argument('-f', '--folder', type=str, required=True, help='Choose a directory (ie: ./data/cnam).')
     parser.add_argument('-v', '--version', action='version', version='1.0')
     return parser.parse_args()
 
 def main():
     # Initialization
     args = parse_args()
-    path = './' + args.folder
+    path = args.folder
     result = []
 
     print(f"{bcolors.HEADER}Folder:", path, f"{bcolors.ENDC}")

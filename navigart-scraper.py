@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import json
+import os
 import re
 import requests
 import time
@@ -169,7 +170,15 @@ def main():
             entries.append(entry)
             num_rows += 1
 
-        output_file = './data/' + args.museum + '-' + str(api_start) + '.json'
+        output_path = './data/' + args.museum + '/'
+        output_file = output_path + args.museum + '-' + str(api_start) + '.json'
+        try:
+            os.mkdir(output_path)
+        except OSError:
+            print ("Creation of the directory %s failed" % output_path)
+        else:
+            print ("Successfully created the directory %s " % output_path)
+
         with open(output_file, 'a+') as json_outputfile:
             json_outputfile.write(json.dumps(entries, indent = 4))
             json_outputfile.close()
