@@ -48,6 +48,7 @@ def create_entry():
         "object_depth": None,
         "object_weight": None,
         "object_copyright": None, # copyright
+        "object_visibility": None, # is actually visible in the museum?
         # Metadata
         "art_movement": None, # key_words_movement
         "acquisition_type": None, # acquisition_mode
@@ -63,7 +64,7 @@ def main():
         'artist_birth', 'artist_death', 'artist_nationality',
         'object_inventory', 'object_title', 'object_date', 'object_type', 'object_technique',
         'object_height', 'object_width', 'object_depth', 'object_weight', 'object_copyright',
-        'art_movement', 'acquisition_type', 'acquisition_date'
+        'object_visibility', 'art_movement', 'acquisition_type', 'acquisition_date'
     ]
 
     args = parse_args()
@@ -148,6 +149,10 @@ def main():
                     entry['object_depth'] = float(regex_dims[2].replace(',',''))
             if 'copyright' in navigart_data['_source']['ua']['artwork']:
                 entry['object_copyright'] = navigart_data['_source']['ua']['artwork']['copyright']
+            if 'hanging' in navigart_data['_source']['ua']['artwork']:
+                entry['object_visibility'] = bool(True)
+            else:
+                entry['object_visibility'] = bool(False)
 
             # Metadata
             if 'key_words_movement' in navigart_data['_source']['ua']['artwork']:
