@@ -66,7 +66,7 @@ def main():
     if museum == 'cnam': navigart_url = 'https://api.navigart.fr/15/'
     if museum == 'mnpp': navigart_url = 'https://www.navigart.fr/picassoparis/'
 
-    # Initialization
+    # Set up the final JSON structure
     fieldnames = [
         'id', 'department',
         'artist_id', 'artist_type', 'artist_name', 'artist_gender',
@@ -76,6 +76,7 @@ def main():
         'object_visibility', 'art_movement', 'acquisition_type', 'acquisition_date'
     ]
 
+    # Set up the web scraper
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 11.2; rv:86.0) Gecko/20100101 Firefox/86.0',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -91,6 +92,16 @@ def main():
     navigart_info = api_infos.json()
     print(f"{bcolors.HEADER}Total of available objects:", navigart_info['filteredCount'], f"{bcolors.ENDC}")
 
+    # Set up the storage directory
+    output_path = './data/' + args.museum
+    try:
+        os.mkdir(output_path)
+    except OSError:
+        print ("Creation of the directory %s failed" % output_path)
+    else:
+        print ("Successfully created the directory %s " % output_path)
+
+    # Let's go!
     for num_rows in range(num_rows, navigart_info['filteredCount'], api_limit):
         navigart = requests.get('https://api.navigart.fr/15/artworks?sort=by_inv&size=' + str(api_limit) + '&from=' + str(api_start), headers=headers)
         print(f"{bcolors.WARNING}HTTP Status:", navigart.status_code, f"{bcolors.ENDC}")
@@ -114,7 +125,12 @@ def main():
                 if '_id' in author: entry['artist_id'] = author['_id']
                 if 'type' in author: entry['artist_type'] = author['type']
                 if 'name' in author: entry['artist_name'] = author['name']['notice']
-                if 'gender' in author: entry['artist_gender'] = author['gender']
+                if 'gender' in author:
+                    if 'féminin' in author: entry['artist_gender'] = 'woman'
+                    elif 'groupe' in author: entry['artist_gender'] = 'group'
+                    elif 'masculine' in author: entry['artist_gender'] = 'man'
+                    else: entry['artist_gender'] = 'unknown'
+
                 if 'authors_birth_death' in navigart_data['_source']['ua']['artwork']:
                     author_dates = navigart_data['_source']['ua']['artwork']['authors_birth_death']
                     # Explode authors_birth_death
@@ -122,8 +138,14 @@ def main():
                     if len(author_years) > 1:
                         birthyear = author_years[0].split(',')
                         deathyear = author_years[1].split(',')
-                        entry['artist_birth'] = birthyear[0]
-                        entry['artist_death'] = deathyear[0]
+                        if isinstance(birthyear[0], int):
+                            entry['artist_birth'] = int(birthyear[0])
+                        else:
+                            entry['artist_birth'] = None
+                        if isinstance(birthyear[0], int):
+                            entry['artist_death'] = int(deathyear[0])
+                        else:
+                            entry['artist_death'] = None
 
                 if 'authors_nationality' in navigart_data['_source']['ua']['artwork']:
                     # First word will be considered as nationality
@@ -170,15 +192,7 @@ def main():
             entries.append(entry)
             num_rows += 1
 
-        output_path = './data/' + args.museum
         output_file = output_path + '/' + args.museum + '-' + str(api_start) + '.json'
-        try:
-            os.mkdir(output_path)
-        except OSError:
-            print ("Creation of the directory %s failed" % output_path)
-        else:
-            print ("Successfully created the directory %s " % output_path)
-
         with open(output_file, 'a+') as json_outputfile:
             json_outputfile.write(json.dumps(entries, indent = 4))
             json_outputfile.close()
@@ -189,6 +203,7 @@ def main():
         entries = []
         time.sleep(60)
 
+    # Finished!
     print('Wrote a total of {} rows.'.format(num_rows))
 
 if __name__ == '__main__':
