@@ -126,10 +126,14 @@ def main():
                 if 'type' in author: entry['artist_type'] = author['type']
                 if 'name' in author: entry['artist_name'] = author['name']['notice']
                 if 'gender' in author:
-                    if 'féminin' in author: entry['artist_gender'] = 'woman'
-                    elif 'groupe' in author: entry['artist_gender'] = 'group'
-                    elif 'masculine' in author: entry['artist_gender'] = 'man'
-                    else: entry['artist_gender'] = 'unknown'
+                    if 'féminin' in author['gender']:
+                        entry['artist_gender'] = 'woman'
+                    elif 'groupe' in author['gender']:
+                        entry['artist_gender'] = 'group'
+                    elif 'masculin' in author['gender']:
+                        entry['artist_gender'] = 'man'
+                    else:
+                        entry['artist_gender'] = author['gender']
 
                 if 'authors_birth_death' in navigart_data['_source']['ua']['artwork']:
                     author_dates = navigart_data['_source']['ua']['artwork']['authors_birth_death']
@@ -138,14 +142,8 @@ def main():
                     if len(author_years) > 1:
                         birthyear = author_years[0].split(',')
                         deathyear = author_years[1].split(',')
-                        if isinstance(birthyear[0], int):
-                            entry['artist_birth'] = int(birthyear[0])
-                        else:
-                            entry['artist_birth'] = None
-                        if isinstance(birthyear[0], int):
-                            entry['artist_death'] = int(deathyear[0])
-                        else:
-                            entry['artist_death'] = None
+                        entry['artist_birth'] = birthyear[0]
+                        entry['artist_death'] = deathyear[0]
 
                 if 'authors_nationality' in navigart_data['_source']['ua']['artwork']:
                     # First word will be considered as nationality
