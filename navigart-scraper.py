@@ -65,6 +65,8 @@ def main():
     museum = args.museum
     if museum == 'cnam': navigart_url = 'https://api.navigart.fr/15/'
     if museum == 'mnpp': navigart_url = 'https://www.navigart.fr/picassoparis/'
+    if museum == 'cnap': navigart_url = 'https://www.cnap.fr/collection-en-ligne'
+    if museum == 'mamvp': navigart_url = 'https://www.mam.paris.fr/fr/collections-en-ligne'
 
     # Set up the final JSON structure
     fieldnames = [
