@@ -2,8 +2,6 @@
 import argparse
 import json
 import os
-import re
-import time
 
 class bcolors:
     HEADER = '\033[95m'
