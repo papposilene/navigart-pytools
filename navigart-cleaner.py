@@ -25,7 +25,6 @@ def parse_args():
 
 def main():
     # Parameters
-    nodesToDelete = []
     args = parse_args()
     param_file = args.filename
     param_field = args.field
