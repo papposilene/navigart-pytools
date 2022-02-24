@@ -201,7 +201,7 @@ def main():
         print('Just wrote {} rows.'.format(num_rows))
         print('Waiting for next round, starting at {}.'.format(api_start))
         entries = []
-        time.sleep(60)
+        time.sleep(30)
 
     # Finished!
     print('Wrote a total of {} rows.'.format(num_rows))
