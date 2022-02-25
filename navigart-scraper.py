@@ -19,7 +19,7 @@ class bcolors:
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Scrape the Navigart internal API for retrieving all public data into an output file.')
-    parser.add_argument('-m', '--museum', type=str, required=True, choices=['cnam', 'mnpp'], help='Choose a supported french museum.')
+    parser.add_argument('-m', '--museum', type=str, required=True, choices=['cnam', 'cnap', 'mamvp', 'mnpp'], help='Choose a supported french museum.')
     parser.add_argument('-s', '--start', nargs='?', default=0, type=int, required=False, help='Choose a start page (default: 0).')
     parser.add_argument('-l', '--limit', nargs='?', default=1000, type=int, required=False, help='Choose a limit by page (default: 1000).')
     parser.add_argument('-v', '--version', action='version', version='1.0')
@@ -42,6 +42,7 @@ def create_entry():
         "object_inventory": None, # inventory
         "object_title": None, # title_notice
         "object_date": None, # date_creation
+        "object_date_clean": None, # date_creation with only the last 4 digits
         "object_type": None, # domain
         "object_technique": None, # domain_description_mst
         "object_height": None, # dimensions ("92 x 73 cm")
@@ -73,9 +74,9 @@ def main():
         'id', 'department',
         'artist_id', 'artist_type', 'artist_name', 'artist_gender',
         'artist_birth', 'artist_death', 'artist_nationality',
-        'object_inventory', 'object_title', 'object_date', 'object_type', 'object_technique',
-        'object_height', 'object_width', 'object_depth', 'object_weight', 'object_copyright',
-        'object_visibility', 'art_movement', 'acquisition_type', 'acquisition_date'
+        'object_inventory', 'object_title', 'object_date', 'object_date_clean', 'object_type', 
+        'object_technique', 'object_height', 'object_width', 'object_depth', 'object_weight', 
+        'object_copyright', 'object_visibility', 'art_movement', 'acquisition_type', 'acquisition_date'
     ]
 
     # Set up the web scraper
@@ -160,7 +161,16 @@ def main():
             if 'title_notice' in navigart_data['_source']['ua']['artwork']:
                 entry['object_title'] = navigart_data['_source']['ua']['artwork']['title_notice']
             if 'date_creation' in navigart_data['_source']['ua']['artwork']:
+                object_date = navigart_data['_source']['ua']['artwork']['date_creation']
+                regex_date = re.findall("([0-9]+)", object_date)
                 entry['object_date'] = navigart_data['_source']['ua']['artwork']['date_creation']
+                if len(regex_date) > 1:
+                    entry['object_date_clean'] = regex_date[1] 
+                elif len(regex_date) == 1:
+                    entry['object_date_clean'] = regex_date[0]
+                else:
+                    entry['object_date_clean'] = None
+
             if 'domain' in navigart_data['_source']['ua']['artwork']:
                 entry['object_type'] = navigart_data['_source']['ua']['artwork']['domain']
             if 'domain_description_mst' in navigart_data['_source']['ua']['artwork']:
