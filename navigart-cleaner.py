@@ -42,7 +42,7 @@ def main():
     filtered_file = [elem for elem in json_inputfile if elem[param_field] not in {"null", "", None}]
 
     print('Total of elements after the cleanup: {} rows.'.format(len(filtered_file)))
-    output_file = param_file + '-' + param_field + '-filtered.json'
+    output_file = param_file + '-' + param_field + '.json'
     with open(output_file, 'a+') as json_outputfile:
         json_outputfile.write(json.dumps(filtered_file, indent = 4))
         
